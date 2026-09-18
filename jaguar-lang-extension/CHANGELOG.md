@@ -60,5 +60,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 For more information about the Jaguar language itself, visit:
-- [Jaguar Language Guide](https://github.com/jaguar-lang/jaguar/blob/main/docs/LANGUAGE_GUIDE.md)
-- [Jaguar Repository](https://github.com/jaguar-lang/jaguar)
+- [Jaguar Language Guide](https://github.com/joemrnice/jaguar/blob/main/docs/LANGUAGE_GUIDE.md)
+- [Jaguar Repository](https://github.com/joemrnice/jaguar)
