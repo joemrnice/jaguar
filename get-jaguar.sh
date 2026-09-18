@@ -15,7 +15,7 @@
 # shell, the way you should for any install-by-curl script.
 set -euo pipefail
 
-JAGUAR_REPO="${JAGUAR_REPO:-YOUR_GITHUB_USERNAME/jaguar}"
+JAGUAR_REPO="${JAGUAR_REPO:-joemrnice/jaguar}"
 JAGUAR_REF="${JAGUAR_REF:-main}"
 PREFIX="${PREFIX:-/usr/local}"
 
