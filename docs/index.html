@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jaguar — a language that masks the others</title>
+<meta name="description" content="Jaguar: one syntax, hot live reload, real OOP, strong typing where you want it, and a built-in networking runtime. Documentation and install guide.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐆</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #10140F;
+  --bg-raised: #161C15;
+  --bg-sunken: #0B0E0A;
+  --border: #262F24;
+  --border-soft: #1D251B;
+  --text: #EAE7DC;
+  --text-muted: #8C9488;
+  --text-faint: #5C6459;
+  --accent: #D9A441;
+  --accent-strong: #F0BC5A;
+  --accent-dim: #8A6B2C;
+  --code-text: #E7C98A;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sidebar-w: 280px;
+  --content-w: 700px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent-dim); color: var(--bg); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-strong); text-decoration: underline; }
+
+/* ---------- layout shell ---------- */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- sidebar ---------- */
+.sidebar {
+  border-right: 1px solid var(--border-soft);
+  background: var(--bg-sunken);
+  padding: 28px 20px 40px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 8px 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.brand-mark {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.nav-group-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  padding: 16px 8px 6px;
+  letter-spacing: 0.03em;
+}
+.nav-link {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.nav-link:hover {
+  background: var(--bg-raised);
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-link.active {
+  background: var(--bg-raised);
+  color: var(--accent-strong);
+}
+.nav-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  min-width: 16px;
+}
+
+/* ---------- main content ---------- */
+.main { min-width: 0; }
+.content-wrap {
+  max-width: var(--content-w);
+  margin: 0 auto;
+  padding: 0 32px 120px;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  padding: 72px 32px 56px;
+  max-width: 900px;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  margin: 0 0 18px;
+}
+.hero h1 {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  color: var(--text);
+}
+.hero h1 .paw { color: var(--accent); }
+.hero-tagline {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 620px;
+  margin: 0 0 36px;
+}
+.hero-tagline strong { color: var(--text); font-weight: 600; }
+
+.install-box {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-width: 640px;
+  overflow: hidden;
+}
+.install-box-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.install-box pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--code-text);
+  position: relative;
+}
+.install-box code { background: none; padding: 0; }
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 5px;
+  padding: 4px 9px;
+  cursor: pointer;
+}
+.copy-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+.copy-btn.copied { color: var(--accent-strong); border-color: var(--accent-dim); }
+
+.hero-links {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+/* ---------- prose ---------- */
+.content-wrap h2 {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+  padding-top: 8px;
+  scroll-margin-top: 24px;
+}
+.content-wrap h3 {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 32px 0 12px;
+  scroll-margin-top: 24px;
+}
+.content-wrap p { margin: 0 0 16px; color: var(--text); max-width: 66ch; }
+.content-wrap > p, .content-wrap li p { color: #CFCCC1; }
+.content-wrap ul, .content-wrap ol { margin: 0 0 16px; padding-left: 22px; max-width: 66ch; }
+.content-wrap li { margin-bottom: 6px; color: #CFCCC1; }
+.content-wrap li strong { color: var(--text); }
+.content-wrap strong { color: var(--text); font-weight: 600; }
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border-soft);
+  margin: 48px 0;
+}
+
+/* inline code */
+.content-wrap code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--bg-sunken);
+  color: var(--code-text);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border-soft);
+}
+
+/* code blocks */
+pre.code-jaguar, pre.code-plain {
+  margin: 0 0 20px;
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+pre.code-jaguar {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-dim);
+  color: #DCD8C8;
+}
+pre.code-plain {
+  background: #0A0D09;
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* callouts (blockquotes) */
+.callout {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  background: rgba(217, 164, 65, 0.07);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  max-width: 66ch;
+}
+.callout p { margin: 0; color: #D8CFB8; font-size: 14.5px; }
+.callout p:not(:last-child) { margin-bottom: 10px; }
+
+/* tables */
+.content-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+.content-wrap th, .content-wrap td {
+  text-align: left;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.content-wrap th {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  font-weight: 500;
+}
+.content-wrap td code { white-space: nowrap; }
+
+footer {
+  max-width: var(--content-w);
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-faint);
+  border-top: 1px solid var(--border-soft);
+}
+
+/* mobile nav toggle */
+.nav-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: min(80vw, 300px);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 40;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .nav-toggle { display: block; }
+  .hero { padding: 88px 20px 40px; }
+  .hero h1 { font-size: 38px; }
+  .hero-tagline { font-size: 16px; }
+  .content-wrap { padding: 0 20px 100px; }
+}
+</style>
+</head>
+<body>
+<button class="nav-toggle" id="navToggle">☰ Contents</button>
+<div class="shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">jaguar</span>
+      <span class="brand-sub">lang docs</span>
+    </div>
+    <div class="nav-group-label">GUIDE</div>
+<a href="#getting-started" class="nav-link"><span class="nav-num">1</span>Getting started</a>
+<a href="#variables-constants-and-types" class="nav-link"><span class="nav-num">2</span>Variables, constants, and types</a>
+<a href="#operators" class="nav-link"><span class="nav-num">3</span>Operators</a>
+<a href="#control-flow" class="nav-link"><span class="nav-num">4</span>Control flow</a>
+<a href="#loops" class="nav-link"><span class="nav-num">5</span>Loops</a>
+<a href="#collections" class="nav-link"><span class="nav-num">6</span>Collections</a>
+<a href="#string-templating" class="nav-link"><span class="nav-num">7</span>String templating</a>
+<a href="#functions-and-closures" class="nav-link"><span class="nav-num">8</span>Functions and closures</a>
+<a href="#classes-and-objects-oop" class="nav-link"><span class="nav-num">9</span>Classes and objects (OOP)</a>
+<a href="#error-handling" class="nav-link"><span class="nav-num">10</span>Error handling</a>
+<a href="#files-and-directories" class="nav-link"><span class="nav-num">11</span>Files and directories</a>
+<a href="#json" class="nav-link"><span class="nav-num">12</span>JSON</a>
+<a href="#environment-variables" class="nav-link"><span class="nav-num">13</span>Environment variables</a>
+<a href="#console-io-and-debugging" class="nav-link"><span class="nav-num">14</span>Console I/O and debugging</a>
+<a href="#live-mode" class="nav-link"><span class="nav-num">15</span>Live mode</a>
+<a href="#timers" class="nav-link"><span class="nav-num">16</span>Timers</a>
+<a href="#http-server" class="nav-link"><span class="nav-num">17</span>HTTP server</a>
+<a href="#http-client" class="nav-link"><span class="nav-num">18</span>HTTP client</a>
+<a href="#websockets" class="nav-link"><span class="nav-num">19</span>WebSockets</a>
+<a href="#workers-threads" class="nav-link"><span class="nav-num">20</span>Workers (threads)</a>
+<a href="#asyncawait-and-task" class="nav-link"><span class="nav-num">21</span>Async/await and Task</a>
+<a href="#putting-it-together-a-small-app" class="nav-link"><span class="nav-num">22</span>Putting it together: a small app</a>
+<a href="#cli-reference" class="nav-link"><span class="nav-num">23</span>CLI reference</a>
+<a href="#gotchas" class="nav-link"><span class="nav-num">24</span>Gotchas</a>  </nav>
+  <div class="main">
+    <div class="hero">
+      <p class="hero-eyebrow">jaguar — v2</p>
+      <h1>One syntax.<br>Every language's <span class="paw">good ideas.</span></h1>
+      <p class="hero-tagline">
+        Jaguar masks the syntax of the languages you already half-know —
+        typed where Rust and Java would insist, loose where Python and
+        JavaScript would let you move — and reloads on save. It ships with
+        real OOP, a real HTTP/WebSocket/worker runtime, and a compiler
+        that gets out of your way.
+      </p>
+      <div class="install-box">
+        <div class="install-box-label">
+          <span>INSTALL — linux &amp; macos</span>
+          <button class="copy-btn" data-copy-target="install-cmd">copy</button>
+        </div>
+        <pre id="install-cmd"><code>curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/jaguar/main/get-jaguar.sh | bash</code></pre>
+      </div>
+      <div class="hero-links">
+        <a href="https://github.com/YOUR_GITHUB_USERNAME/jaguar">source on GitHub →</a>
+        <a href="#getting-started">jump to docs ↓</a>
+      </div>
+    </div>
+    <div class="content-wrap">
+
+
+
+
+
+<h2 id="getting-started"><span id="1-getting-started" style="display:none"></span>1. Getting started</h2>
+<p>Build and install <code>jag</code> (see the main <a href="https://github.com/YOUR_GITHUB_USERNAME/jaguar/blob/main/README.md">README</a> for details), then run a file:</p>
+<pre class="code-plain"><code>jag run hello.jag
+# or just:
+jag hello.jag</code></pre>
+<pre class="code-jaguar"><code>// hello.jag
+live.on("Hello, Jaguar!");</code></pre>
+<pre class="code-plain"><code>$ jag run hello.jag
+Hello, Jaguar!</code></pre>
+<p><code>live.on(...)</code> is Jaguar’s <code>print</code> — you’ll use
+it constantly. File extensions <code>.jag</code> and <code>.ja</code>
+are both accepted. Comments are <code>//</code> for the rest of the
+line, or <code>/* ... */</code> for a block.</p>
+<hr class="section-divider"/>
+<h2 id="variables-constants-and-types"><span id="2-variables-constants-and-types" style="display:none"></span>2. Variables, constants, and
+types</h2>
+<p>Every variable has a declared type. Declare with <code>var</code>, or
+<code>fixed</code> for a constant that can never be reassigned:</p>
+<pre class="code-jaguar"><code>var name: string = "Ada";
+var age: num = 30;
+var score: decimal = 98.5;
+var isActive: bool = true;
+fixed PI: scifi = 3.14E2;   // 314 — scifi is scientific notation, always fixed-format</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Meaning</th>
+<th>Example literal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>string</code></td>
+<td>text</td>
+<td><code>"hello"</code></td>
+</tr>
+<tr class="even">
+<td><code>num</code></td>
+<td>integer</td>
+<td><code>42</code></td>
+</tr>
+<tr class="odd">
+<td><code>decimal</code></td>
+<td>floating point</td>
+<td><code>3.14</code></td>
+</tr>
+<tr class="even">
+<td><code>bool</code></td>
+<td>true/false</td>
+<td><code>true</code></td>
+</tr>
+<tr class="odd">
+<td><code>scifi</code></td>
+<td>scientific-notation literal</td>
+<td><code>3.14E2</code></td>
+</tr>
+<tr class="even">
+<td><code>data</code></td>
+<td>key:value map</td>
+<td><code>{ "a": 1 }</code></td>
+</tr>
+<tr class="odd">
+<td><code>list&lt;T&gt;</code></td>
+<td>array, single element type</td>
+<td><code>[1, 2, 3]</code></td>
+</tr>
+<tr class="even">
+<td><code>MixedList</code></td>
+<td>array, mixed element types</td>
+<td><code>[1, "two", true]</code></td>
+</tr>
+</tbody>
+</table>
+<p>A type annotation is <strong>required</strong> on every
+<code>var</code>/<code>fixed</code> declaration —
+<code>var y = 5;</code> without a <code>: type</code> is a type error,
+caught by <code>jag check</code>:</p>
+<pre class="code-plain"><code>$ jag check bad.jag
+bad.jag:1: type error: 'y' is missing a required type annotation</code></pre>
+<p>Reassigning a <code>fixed</code> is also a type error, and
+<code>fixed</code> requires an initializer:</p>
+<pre class="code-jaguar"><code>fixed x: num = 5;
+x = 10;   // type error: cannot reassign fixed variable 'x'</code></pre>
+<p><strong>Numeric division always produces a
+<code>decimal</code></strong>, even for two <code>num</code> operands —
+this is a deliberate choice (see DESIGN_DECISIONS.md) so
+<code>7 / 2</code> gives you <code>3.5</code> instead of silently
+truncating:</p>
+<pre class="code-jaguar"><code>live.on(7 / 2);   // 3.5
+live.on(7 % 2);   // 1  (modulo stays integer when both operands are num)</code></pre>
+<hr class="section-divider"/>
+<h2 id="operators"><span id="3-operators" style="display:none"></span>3. Operators</h2>
+<pre class="code-jaguar"><code>// arithmetic
++  -  *  /  %  **      // ** is power, right-associative
+
+// augmented assignment
++= -= *= /= %= **=
+
+// comparison
+&gt;  &lt;  &gt;=  &lt;=  ==  !=
+
+// logical
+&amp;&amp;  ||  !
+
+// bitwise-ish shifts
+&lt;&lt;  &gt;&gt;
+
+// the "between" operator — inclusive range check, returns bool
+value &lt;&lt;&lt; (low, high)</code></pre>
+<pre class="code-jaguar"><code>var n: num = 7;
+live.on(n &lt;&lt;&lt; (1, 10));   // true — 1 &lt;= n &lt;= 10</code></pre>
+<p>Ternary expressions work as you’d expect:</p>
+<pre class="code-jaguar"><code>var status: string = (age &gt;= 18) ? "adult" : "minor";</code></pre>
+<hr class="section-divider"/>
+<h2 id="control-flow"><span id="4-control-flow" style="display:none"></span>4. Control flow</h2>
+<pre class="code-jaguar"><code>if (age &gt; 18) {
+    live.on("adult");
+} elif (age == 18) {
+    live.on("just turned adult");
+} else {
+    live.on("minor");
+}</code></pre>
+<p><code>elif</code>, not <code>else if</code> — that’s a real,
+easy-to-forget difference from C-family languages.</p>
+<hr class="section-divider"/>
+<h2 id="loops"><span id="5-loops" style="display:none"></span>5. Loops</h2>
+<p>Jaguar has four loop forms:</p>
+<pre class="code-jaguar"><code>// while
+var i: num = 0;
+loop (i &lt; 5) {
+    live.on(i);
+    i += 1;
+}
+
+// do-while
+do loop {
+    live.on(i);
+    i -= 1;
+} while (i &gt; 0);
+
+// for-in, over a list
+var scores: list&lt;num&gt; = [10, 20, 30];
+for (s in scores) {
+    live.on(s);
+}
+
+// for-in with an optional trailing condition (filters as it iterates)
+for (s in scores, s &gt; 15) {
+    live.on(s);   // only prints 20, 30
+}
+
+// iterate() — works over both list and data collections
+iterate(scores, item) {
+    live.on(item);
+}
+var config: data = { "host": "localhost", "port": "8080" };
+iterate(config, v) {
+    live.on(v);   // yields each *value* — "localhost", then "8080"
+                   // (no key access in iterate(); use for-in over
+                   // .keys()-style access isn't available either —
+                   // if you need keys, index the data value directly:
+                   // config["host"], config.host)
+}</code></pre>
+<hr class="section-divider"/>
+<h2 id="collections"><span id="6-collections" style="display:none"></span>6. Collections</h2>
+<h3 id="data-maps"><code>data</code> (maps)</h3>
+<pre class="code-jaguar"><code>var config: data = { "host": "localhost", "port": "8080" };
+live.on(config["host"]);   // bracket access
+live.on(config.host);       // dot access — both work identically
+config["timeout"] = "30";   // assign a new key
+config.retries = "3";       // dot-assignment also works</code></pre>
+<h3 id="listt"><code>list&lt;T&gt;</code></h3>
+<pre class="code-jaguar"><code>var nums: list&lt;num&gt; = [1, 2, 3];
+nums.append(4);       // insert at end       -&gt; [1, 2, 3, 4]
+nums.insert(0);        // insert at start     -&gt; [0, 1, 2, 3, 4]
+nums.delete(1);         // remove by index     -&gt; [0, 2, 3, 4]
+nums.sort();             // sort ascending
+nums.concat([9, 9]);     // append another list's items in place
+live.on(nums);
+live.on(nums[0]);        // index access</code></pre>
+<h3 id="mixedlist"><code>MixedList</code></h3>
+<p>Like <code>list</code>, but elements can be any type — no
+compile-time element-type checking:</p>
+<pre class="code-jaguar"><code>var mixed: MixedList = [1, "two", true];</code></pre>
+<h3 id="vectort-matrixt"><code>vector&lt;T&gt;</code> /
+<code>matrix&lt;T&gt;</code></h3>
+<pre class="code-jaguar"><code>vector&lt;num&gt; position = [3, 4];
+matrix&lt;num&gt; grid = [[1, 2], [3, 4]];</code></pre>
+<blockquote class="callout">
+<p><strong>Honest limitation</strong>:
+<code>vector</code>/<code>matrix</code> are recognized types that
+typecheck correctly, but at runtime they’re backed by ordinary lists
+(lists-of-lists for <code>matrix</code>) — there’s no dot-product,
+matrix multiplication, or other vector-math built in. If you need that,
+you’re writing it yourself with <code>list</code> methods and loops for
+now.</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="string-templating"><span id="7-string-templating" style="display:none"></span>7. String templating</h2>
+<p>Two forms of interpolation are supported inside double-quoted
+strings:</p>
+<pre class="code-jaguar"><code>var name: string = "world";
+live.on("hi, {{name}}");        // {{ }} form
+live.on("hi, ${name}");          // ${ } form — identical behavior</code></pre>
+<blockquote class="callout">
+<p><strong>Important difference from the original language
+spec</strong>: a <em>bare</em> single <code>{expr}</code> (no double
+braces, no <code>$</code>) does <strong>not</strong> interpolate — it’s
+treated as literal text. This is deliberate: a lone <code>{</code> is
+extremely common in ordinary strings (embedded JSON being the obvious
+case), and treating every <code>{...}</code> as code would make strings
+like <code>"{\"a\": 1}"</code> un-writable. See DESIGN_DECISIONS.md for
+the full reasoning. Use <code>{{ }}</code> or <code>${ }</code>
+always.</p>
+</blockquote>
+<pre class="code-jaguar"><code>// this is fine — the braces here are just literal text:
+var raw: string = "{\"a\": 1, \"b\": [1,2,3]}";
+var parsed: data = json.parse(raw);</code></pre>
+<hr class="section-divider"/>
+<h2 id="functions-and-closures"><span id="8-functions-and-closures" style="display:none"></span>8. Functions and closures</h2>
+<pre class="code-jaguar"><code>fun greet(name: string) {
+    live.on("hi, {{name}}");
+}
+greet("world");
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+live.on(add(2, 3));   // 5</code></pre>
+<p>Functions are values and close over their defining scope
+normally:</p>
+<pre class="code-jaguar"><code>fun makeCounter() {
+    var count: num = 0;
+    fun increment(): num {
+        count += 1;
+        return count;
+    }
+    return increment;
+}</code></pre>
+<p>Top-level functions can be called before their textual definition
+(they’re hoisted), so this is fine:</p>
+<pre class="code-jaguar"><code>live.on(double(5));   // 10 — works even though double() is defined below
+fun double(n: num): num { return n * 2; }</code></pre>
+<p><code>async fun</code> is also supported syntactically — see <a href="#21-asyncawait-and-task">§21 Async/await and Task</a> for what it
+actually does in this implementation (spoiler: it runs synchronously,
+like a normal function).</p>
+<hr class="section-divider"/>
+<h2 id="classes-and-objects-oop"><span id="9-classes-and-objects-oop" style="display:none"></span>9. Classes and objects (OOP)</h2>
+<p>Jaguar has real, working classes now — fields, methods, constructors,
+<code>this</code>, and single inheritance via
+<code>extends</code>/<code>super</code>. (The original language spec
+defines <code>class</code> declarations but never actually shows how you
+construct an instance of one anywhere in its own worked examples —
+<code>new</code>/<code>this</code>/<code>super</code>/<code>extends</code>
+are this project’s resolution of that gap, designed to feel familiar
+from JS/Java/Python rather than invent something new. See
+DESIGN_DECISIONS.md for the reasoning.)</p>
+<h3 id="fields-constructors-methods-this">Fields, constructors, methods,
+<code>this</code></h3>
+<pre class="code-jaguar"><code>class User {
+    var name: string;
+    var age: num;
+
+    fun constructor(name: string, age: num) {
+        this.name = name;
+        this.age = age;
+    }
+
+    fun greet(): string {
+        return "Hi, I'm {{this.name}}, age {{this.age}}";
+    }
+}
+
+var u: User = new User("Ada", 30);
+live.on(u.name);       // Ada
+live.on(u.greet());    // Hi, I'm Ada, age 30
+u.age = 31;              // fields are mutable
+live.on(u);              // User {"age": 31, "name": Ada}</code></pre>
+<p>A method literally named <code>constructor</code> is called
+automatically by <code>new</code>. A class with no constructor is
+perfectly legal — <code>new X()</code> just leaves its fields at their
+declared defaults (void, unless the field has its own initializer like
+<code>var count: num = 0;</code>).</p>
+<h3 id="inheritance-extends-super-super.method">Inheritance:
+<code>extends</code>, <code>super()</code>,
+<code>super.method()</code></h3>
+<pre class="code-jaguar"><code>class Animal {
+    var name: string;
+    fun constructor(name: string) { this.name = name; }
+    fun speak(): string { return "{{this.name}} makes a sound"; }
+}
+
+class Dog extends Animal {
+    var breed: string;
+    fun constructor(name: string, breed: string) {
+        super(name);           // calls Animal's constructor
+        this.breed = breed;
+    }
+    fun speak(): string {
+        var base: string = super.speak();   // calls Animal's speak()
+        return "{{base}} (specifically, a bark, from a {{this.breed}})";
+    }
+}
+
+var d: Dog = new Dog("Rex", "Labrador");
+live.on(d.speak());
+// Rex makes a sound (specifically, a bark, from a Labrador)</code></pre>
+<p><code>super(...)</code> (no dot) calls the parent class’s
+constructor, bound to the same instance. <code>super.method(...)</code>
+calls a specific method on the parent class, also bound to the same
+instance — both work through as many inheritance levels as you chain
+<code>extends</code> through.</p>
+<h3 id="polymorphism">Polymorphism</h3>
+<p>Method lookup on <code>this</code> always starts from the instance’s
+actual (most-derived) class, so overriding works the way you’d expect
+from any mainstream OOP language:</p>
+<pre class="code-jaguar"><code>class Shape {
+    fun area(): decimal { return 0.0; }
+    fun describe(): string { return "a shape with area {{this.area()}}"; }
+}
+class Circle extends Shape {
+    var radius: decimal;
+    fun constructor(radius: decimal) { this.radius = radius; }
+    fun area(): decimal { return 3.14159 * this.radius * this.radius; }
+}
+class Square extends Shape {
+    var side: decimal;
+    fun constructor(side: decimal) { this.side = side; }
+    fun area(): decimal { return this.side * this.side; }
+}
+
+var shapes: MixedList = [new Circle(2.0), new Square(3.0)];
+iterate(shapes, s) {
+    live.on(s.describe());   // each calls its own overridden area()
+}</code></pre>
+<h3 id="whats-not-modeled-yet">What’s not modeled (yet)</h3>
+<ul>
+<li><strong>No access-control enforcement.</strong>
+<code>public</code>/<code>private</code> class modifiers parse (and the
+type checker registers the class name either way), but nothing stops
+external code from reading/calling a “private” class’s fields or
+methods. Treat the modifiers as documentation for now, not an enforced
+boundary.</li>
+<li><strong>Single inheritance only</strong> — there’s no
+interface/trait/mixin mechanism, only one <code>extends</code> parent
+per class.</li>
+<li><strong>No static (class-level) fields or methods</strong> —
+everything is per-instance.</li>
+<li><strong>Field/constructor visibility isn’t checked against types as
+thoroughly as top-level functions in every case</strong> — see <a href="#24-gotchas">§24 Gotchas</a> for the specific edge the type
+checker deliberately stays conservative about.</li>
+</ul>
+<h3 id="enum-struct-vector-matrix"><code>enum</code>,
+<code>struct</code>, <code>vector</code>, <code>matrix</code></h3>
+<p>These remain as in the original reference:</p>
+<pre class="code-jaguar"><code>enum Direction { North, South, East, West }
+struct Point { x: num; y: num; }
+vector&lt;num&gt; position = [3, 4];
+matrix&lt;num&gt; grid = [[1, 2], [3, 4]];</code></pre>
+<p><code>enum</code>/<code>struct</code> register their name (so
+referencing them doesn’t error) but, like classes before this version,
+still have no dedicated construction syntax of their own — use a
+<code>class</code> (now that it works) or a <code>data</code> literal
+for anything you need to actually build and pass around.
+<code>vector</code>/<code>matrix</code> are still backed by ordinary
+lists at runtime, with no dot-product/matrix-multiplication built
+in.</p>
+<hr class="section-divider"/>
+<h2 id="error-handling"><span id="10-error-handling" style="display:none"></span>10. Error handling</h2>
+<pre class="code-jaguar"><code>try {
+    var res: data = await http.get("http://unreachable.invalid");
+    live.on(res);
+} catch (err: string) {
+    live.on("request failed: {{err}}");
+}</code></pre>
+<p>Any runtime error inside a <code>try</code> block — a failed network
+call, a division by zero, an out-of-range list index, an unknown method
+call — is caught and bound to the name you declare in
+<code>catch (name: string)</code>. Errors are always strings; there’s no
+typed error hierarchy.</p>
+<hr class="section-divider"/>
+<h2 id="files-and-directories"><span id="11-files-and-directories" style="display:none"></span>11. Files and directories</h2>
+<p>Jaguar’s file/dir API is a <strong>singleton handle</strong> —
+there’s one “current file” and one “current directory” at a time, opened
+with <code>.on()</code>:</p>
+<pre class="code-jaguar"><code>file.on("notes.txt");
+var contents: string = file.read();   // reads the whole file as a string
+file.close();
+
+dir.on("./logs");
+var names: list&lt;string&gt; = dir.read();  // list of entry names (files + dirs)
+dir.close();
+dir.del();                              // rmdir — only works on an empty dir</code></pre>
+<blockquote class="callout">
+<p><strong>Honest limitation</strong>: <code>file.loop()</code> is
+accepted syntactically but is currently a no-op — there’s no
+line-by-line iteration API yet. Read the whole file with
+<code>file.read()</code> and split/process the string yourself if you
+need line-by-line behavior.</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="json"><span id="12-json" style="display:none"></span>12. JSON</h2>
+<pre class="code-jaguar"><code>var obj: data = json.parse('{"name":"Joe"}');   // note: use \" inside
+                                                    // double-quoted strings,
+                                                    // or write the JSON with
+                                                    // escaped quotes as shown
+var text: string = json.stringify(obj);
+live.on(text);</code></pre>
+<p>Jaguar has no single-quoted strings, so JSON text (which itself uses
+double quotes) needs escaping when written as a literal:</p>
+<pre class="code-jaguar"><code>var raw: string = "{\"name\": \"Joe\", \"tags\": [1, 2, 3]}";
+var obj: data = json.parse(raw);</code></pre>
+<p><code>json.stringify</code> handles <code>data</code>,
+<code>list</code>, <code>string</code>, <code>num</code>,
+<code>decimal</code>, <code>bool</code>, and <code>void</code> (→
+<code>null</code>).</p>
+<hr class="section-divider"/>
+<h2 id="environment-variables"><span id="13-environment-variables" style="display:none"></span>13. Environment variables</h2>
+<pre class="code-jaguar"><code>var port: num = env.get("PORT", 8080);   // second argument is the default</code></pre>
+<hr class="section-divider"/>
+<h2 id="console-io-and-debugging"><span id="14-console-io-and-debugging" style="display:none"></span>14. Console I/O and debugging</h2>
+<pre class="code-jaguar"><code>live.on("Hello, World!");             // print
+var name: string = live.in("Name? "); // prompt + read a line from stdin
+live.on("Hi, {{name}}");
+
+// live.deg: a debug type-assertion helper.
+// live.deg(typeName, value1, value2, ...) checks each value against the
+// named type and prints one of: expectation met / type mismatch / not defined
+var greeting: string = "Hi";
+live.deg("string", greeting);    // prints: live.deg: expectation met for argument 1</code></pre>
+<p><code>jag check</code> also statically flags a
+<code>live.deg()</code> call with fewer than 2 arguments (it can’t check
+anything without at least a type name and one value).</p>
+<hr class="section-divider"/>
+<h2 id="live-mode"><span id="15-live-mode" style="display:none"></span>15. Live mode</h2>
+<p>Run a script that re-executes every time you save it:</p>
+<pre class="code-plain"><code>jag -live=1 hello.jag</code></pre>
+<p>Jaguar watches the file’s modification time and reloads (re-lex,
+re-parse, re-typecheck, re-run) on every save. You can also write
+<code>live = "1";</code> as the first line of the file — it’s recognized
+as a directive, and doesn’t create a variable named <code>live</code>
+(which would otherwise shadow the
+<code>live.on</code>/<code>live.in</code>/<code>live.deg</code>
+namespace for the rest of the script).</p>
+<blockquote class="callout">
+<p><strong>Note</strong>: live-reload and a running server
+(<code>server.listen()</code>/ <code>socket.listen()</code>) don’t
+currently combine — once a server starts serving, the process is busy
+running the event loop and won’t notice further file saves. Use
+<code>-live=1</code> for ordinary scripts, and plain
+<code>jag run</code> while iterating on a server.</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="timers"><span id="16-timers" style="display:none"></span>16. Timers</h2>
+<pre class="code-jaguar"><code>live.after(1000, fun() {
+    live.on("1 second passed");
+});
+
+var tickId: num = live.every(500, fun() {
+    live.on("tick");
+});
+live.clear(tickId);   // stops the repeating timer</code></pre>
+<p>These are real event-loop timers (not <code>sleep()</code>-based) —
+they fire in due-time order, and a script that only has timers pending
+(no server) stays alive until they’re all done or cleared.</p>
+<hr class="section-divider"/>
+<h2 id="http-server"><span id="17-http-server" style="display:none"></span>17. HTTP server</h2>
+<pre class="code-jaguar"><code>import "http.jag";
+
+server.on(8080);
+
+server.route("GET", "/", fun(req: data, res: data) {
+    res.send("Welcome to Jaguar HTTP server");
+});
+
+server.route("GET", "/users/{id}", fun(req: data, res: data) {
+    var id: string = req.params["id"];
+    res.json({ "id": id, "name": "Joe" });
+});
+
+server.route("POST", "/users", fun(req: data, res: data) {
+    var body: data = json.parse(req.body);
+    res.status(201).json({ "status": "created", "name": body["name"] });
+});
+
+server.listen();</code></pre>
+<p><code>req</code> fields: <code>method</code>, <code>path</code>,
+<code>params</code> (route <code>{param}</code> captures),
+<code>query</code> (query-string as <code>data</code>),
+<code>headers</code> (<code>data</code>), <code>body</code> (raw
+string). <code>res</code> methods: <code>.send(string)</code>,
+<code>.json(data)</code>, <code>.status(num)</code> (chainable — returns
+<code>res</code> so you can write
+<code>res.status(201).json(...)</code>),
+<code>.header(key, value)</code>.</p>
+<p><strong>This is a real server</strong>: connections are handled
+non-blocking via an <code>epoll</code> event loop and coroutines, so
+many clients can be connected at once without blocking each other — not
+a toy single-connection-at-a-time loop. Every response currently closes
+the connection afterward (no keep-alive), and only
+<code>Content-Length</code> bodies are supported (no chunked transfer
+encoding). <code>https://</code> isn’t available — there’s no TLS in
+this build; plain <code>http://</code> only.</p>
+<p>Calling <code>server.listen()</code> doesn’t literally block your
+script the way a raw blocking <code>accept()</code> loop would — it
+registers the listener and returns, and the <em>process</em> stays alive
+afterward because of that pending listener (the same model Node.js
+uses). This is what lets one file both <code>server.listen()</code> an
+HTTP port and <code>socket.listen()</code> a WebSocket port (see <a href="#19-websockets">§19</a>) and serve both concurrently.</p>
+<hr class="section-divider"/>
+<h2 id="http-client"><span id="18-http-client" style="display:none"></span>18. HTTP client</h2>
+<pre class="code-jaguar"><code>async fun fetchUser(id: num): Task&lt;data&gt; {
+    var res: data = await http.get("http://127.0.0.1:8080/users/{{id}}");
+    return json.parse(res["body"]);
+}
+
+async fun main() {
+    var user: data = await fetchUser(42);
+    live.on(user);
+}
+main();</code></pre>
+<p><code>http.get(url)</code> / <code>http.post(url, data)</code> return
+a <code>Task&lt;data&gt;</code> whose resolved value is
+<code>{ "status": num, "headers": data, "body": string }</code>. POST
+bodies are sent as JSON (the <code>data</code> you pass is
+<code>json.stringify</code>’d automatically, with
+<code>Content-Type: application/json</code> set for you).</p>
+<p>A failed request (connection refused, DNS failure, malformed
+response) surfaces through <code>await</code> as a catchable error:</p>
+<pre class="code-jaguar"><code>try {
+    var res: data = await http.get("http://127.0.0.1:1/");
+    live.on(res);
+} catch (err: string) {
+    live.on("caught: {{err}}");
+}</code></pre>
+<blockquote class="callout">
+<p><strong>How this actually works under the hood</strong>: the client
+is a synchronous (blocking) network call, not a coroutine-suspended one
+— see <a href="#21-asyncawait-and-task">§21</a> for what that means for
+<code>await</code> and <code>Task.all</code>.</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="websockets"><span id="19-websockets" style="display:none"></span>19. WebSockets</h2>
+<pre class="code-jaguar"><code>socket.on(9090);
+
+socket.route("/chat", fun(ws: Socket) {
+    ws.on("message", fun(msg: string) {
+        ws.send("echo: {{msg}}");
+    });
+    ws.on("close", fun() {
+        live.on("client disconnected");
+    });
+});
+
+socket.listen();</code></pre>
+<p>This is a real RFC 6455 implementation — a genuine handshake
+(<code>Sec-WebSocket-Accept</code> computed via SHA-1 + base64) and real
+frame parsing/masking, tested against a raw Python socket client, not a
+library. <code>ws.send(text)</code> sends a text frame;
+<code>ws.close()</code> closes the connection.</p>
+<blockquote class="callout">
+<p><strong>Honest limitations</strong>: there’s no WebSocket
+<em>client</em> yet (<code>socket.connect()</code> raises a clear error
+rather than pretending to work), and multi-frame fragmented messages
+aren’t reassembled — each frame is delivered to
+<code>on("message", ...)</code> independently. Ordinary single-frame
+text/binary messages (what every WS client sends by default for
+reasonably-sized messages) work correctly.</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="workers-threads"><span id="20-workers-threads" style="display:none"></span>20. Workers (threads)</h2>
+<p>Three ways to run work on a background OS thread:</p>
+<pre class="code-jaguar"><code>// 1. a single background job
+fun heavyComputation(): data {
+    var total: num = 0;
+    var i: num = 0;
+    loop (i &lt; 500000) { total += i; i += 1; }
+    return { "total": total };
+}
+
+var w: Worker = worker.spawn(fun(): data {
+    return heavyComputation();
+});
+w.on("done", fun(result: data) {
+    live.on(result);   // { "total": ..., "threadId": ... }
+});</code></pre>
+<blockquote class="callout">
+<p>The runtime attaches a <code>threadId</code> field to the result for
+you, but only when the worker function returns a <code>data</code> value
+(as above) — if it returns a plain
+<code>num</code>/<code>string</code>/etc., you just get that value back
+with no <code>threadId</code> wrapper, since there’s nowhere to attach
+it.</p>
+</blockquote>
+<pre class="code-jaguar"><code>// 2. run a whole separate file on its own thread, fully isolated
+worker.run("tasks.jag", fun(result: data) {
+    live.on("worker.run finished");
+});</code></pre>
+<pre class="code-jaguar"><code>// 3. a fixed pool of threads processing many jobs
+var pool: Worker = worker.pool(4);
+pool.submit(fun(): data { return heavyComputation(); });
+pool.submit(fun(): data { return heavyComputation(); });
+pool.onAll(fun(results: list&lt;data&gt;) {
+    live.on(results);   // each entry has "total" and "threadId"
+});</code></pre>
+<p>These are real <code>pthread</code> OS threads —
+<code>worker.pool(4)</code> genuinely creates 4 threads, verifiable via
+each result’s <code>threadId</code> field (again, only attached when the
+job returns a <code>data</code> value, as here).</p>
+<blockquote class="callout">
+<p><strong>Important</strong>: interpreter execution across worker
+threads is serialized by a single lock (documented in
+DESIGN_DECISIONS.md as a deliberate GIL-style tradeoff). That means you
+get real OS threads and real thread-safety, but <strong>not</strong> a
+computational speedup from adding more pool threads — total time for N
+CPU-bound jobs is closer to N times one job’s time than to one job’s
+time. Use workers to keep heavy computation off a request-handling path
+(see the combined example below), not to make CPU-bound code faster.</p>
+<p>Worker functions also can’t see the local variables of whatever
+called <code>worker.spawn</code>/<code>.pool</code> — only top-level
+functions and <code>fixed</code> constants (this is deliberate: the spec
+requires workers not to share mutable state with the thread that spawned
+them).</p>
+</blockquote>
+<hr class="section-divider"/>
+<h2 id="asyncawait-and-task"><span id="21-asyncawait-and-task" style="display:none"></span>21. Async/await and Task</h2>
+<p>This is the part of Jaguar most worth understanding precisely,
+because its behavior here is a simplified, honest version of what the
+full language spec describes.</p>
+<p><strong>What actually happens</strong>: calling any function —
+including one declared <code>async fun</code> — runs its body
+immediately and synchronously, exactly like a normal function call.
+There is no coroutine suspension at the Jaguar-code level.
+<code>await expr</code>:</p>
+<ul>
+<li>if <code>expr</code> is a <code>Task</code> (e.g. the direct result
+of <code>http.get(...)</code>), unwraps it — returning its value if it
+succeeded, or raising a catchable error if it failed;</li>
+<li>otherwise, it’s a no-op that just returns <code>expr</code>
+unchanged.</li>
+</ul>
+<pre class="code-jaguar"><code>async fun fetchUser(id: num): Task&lt;data&gt; {
+    // http.get() already ran to completion (blocking) by the time this
+    // line finishes; await here just unwraps its Task wrapper.
+    var res: data = await http.get("http://127.0.0.1:8080/users/{{id}}");
+    return json.parse(res["body"]);   // fetchUser() itself returns a
+                                        // plain `data` value, not a Task
+}
+
+async fun main() {
+    // fetchUser(1) and fetchUser(2) below each run to completion,
+    // one after another, before this list literal is even evaluated —
+    // there's no concurrent fan-out actually happening.
+    var results: list&lt;data&gt; = await Task.all([fetchUser(1), fetchUser(2)]);
+    live.on(results);
+}</code></pre>
+<p><code>Task.all([...])</code> reflects this honestly: since every item
+in the list is already a fully-resolved value by the time the list
+literal is evaluated, <code>Task.all</code> just wraps that
+already-complete list — it’s an interface-compatibility wrapper (so
+<code>.then()</code>/<code>.await()</code> work on it), not a real
+concurrent scheduler.</p>
+<p><strong>Where real asynchrony <em>does</em> exist</strong>: inside an
+accepted HTTP or WebSocket connection (see §17/§19), the connection’s
+own I/O genuinely suspends via coroutines and the event loop — that’s
+what lets one thread serve many slow connections. It’s the
+<em>outbound</em> client call
+(<code>http.get</code>/<code>http.post</code>) and top-level
+<code>async fun</code>/<code>await</code> that are simplified to
+synchronous execution. See DESIGN_DECISIONS.md for the full reasoning if
+you’re extending this.</p>
+<p><strong><code>Task</code> methods</strong>, usable on anything
+<code>http.get</code>/<code>post</code> returns:</p>
+<pre class="code-jaguar"><code>var task: Task&lt;data&gt; = http.get("http://127.0.0.1:8080/");
+task.then(fun(result: data) { live.on(result); });
+task.catch(fun(err: string) { live.on("failed: {{err}}"); });
+var result: data = task.await();   // equivalent to `await task`</code></pre>
+<hr class="section-divider"/>
+<h2 id="putting-it-together-a-small-app"><span id="22-putting-it-together-a-small-app" style="display:none"></span>22. Putting it together: a
+small app</h2>
+<p>A single process serving HTTP, WebSocket chat, CPU work on a thread
+pool, and a heartbeat timer — everything above, combined:</p>
+<pre class="code-jaguar"><code>live = "1";
+import "http.jag";
+
+fixed PORT: num = env.get("PORT", 8080);
+server.on(PORT);
+
+server.route("GET", "/", fun(req: data, res: data) {
+    res.send("Welcome to Jaguar HTTP server");
+});
+
+server.route("GET", "/users/{id}", fun(req: data, res: data) {
+    res.json({ "id": req.params["id"], "name": "Joe" });
+});
+
+var pool: Worker = worker.pool(4);
+server.route("POST", "/compute", fun(req: data, res: data) {
+    pool.submit(fun(): num { return heavyComputation(); });
+    pool.onAll(fun(results: list&lt;num&gt;) {
+        res.json({ "results": results });
+    });
+});
+
+fun heavyComputation(): num {
+    var total: num = 0;
+    var i: num = 0;
+    loop (i &lt; 2000000) { total += i; i += 1; }
+    return total;
+}
+
+socket.on(9090);
+socket.route("/chat", fun(ws: Socket) {
+    ws.on("message", fun(msg: string) { ws.send("echo: {{msg}}"); });
+    ws.on("close", fun() { live.on("client disconnected"); });
+});
+
+live.every(10000, fun() { live.on("heartbeat"); });
+
+server.listen();
+socket.listen();</code></pre>
+<p>Run it, then in another terminal:</p>
+<pre class="code-plain"><code>curl http://127.0.0.1:8080/users/5
+curl -X POST http://127.0.0.1:8080/compute</code></pre>
+<p>See <code>examples/server_demo.jag</code> in this repo for the exact,
+tested version of this file.</p>
+<hr class="section-divider"/>
+<h2 id="cli-reference"><span id="23-cli-reference" style="display:none"></span>23. CLI reference</h2>
+<pre class="code-plain"><code>jag &lt;file.jag&gt;            compile+run once (interpreter backend)
+jag run &lt;file.jag&gt;        same, explicit
+jag -live=1 &lt;file.jag&gt;    live-reload mode (watches the file for saves)
+jag check &lt;file.jag&gt;      lex + parse + typecheck only, no execution
+jag build &lt;file.jag&gt;      ahead-of-time native compile [not implemented]
+jag --version / --help</code></pre>
+<p><code>jag check</code> is worth running before <code>jag run</code>
+while learning the language — it catches missing type annotations,
+fixed-reassignment, and a few other mistakes with a clear diagnostic
+instead of a runtime surprise:</p>
+<pre class="code-plain"><code>$ jag check mistake.jag
+mistake.jag:3: type error: cannot reassign fixed variable 'x'
+mistake.jag: 1 type error(s)</code></pre>
+<hr class="section-divider"/>
+<h2 id="gotchas"><span id="24-gotchas" style="display:none"></span>24. Gotchas</h2>
+<p>A quick-reference list of things that catch people coming from other
+languages:</p>
+<ul>
+<li><strong><code>elif</code>, not <code>else if</code>.</strong></li>
+<li><strong>Every <code>var</code>/<code>fixed</code> needs a type
+annotation</strong> — no inference.</li>
+<li><strong>Division always returns <code>decimal</code></strong>, even
+<code>num / num</code>.</li>
+<li><strong>Bare <code>{expr}</code> in a string does not
+interpolate</strong> — only <code>{{expr}}</code> and
+<code>${expr}</code> do. This matters most when you’re writing literal
+JSON text as a string.</li>
+<li><strong><code>new X()</code> works for <code>class</code> now, but
+not <code>struct</code>/<code>enum</code></strong> — those two still
+only register their name; build record-like values from a
+<code>class</code> (with a <code>constructor</code>) or a
+<code>data</code> literal instead.</li>
+<li><strong><code>iterate()</code> over a <code>data</code> value yields
+values only</strong>, not key/value pairs.</li>
+<li><strong>No access-control enforcement</strong> —
+<code>public</code>/<code>private</code> on a class parse but nothing
+stops external code from touching a “private” class’s fields or methods;
+treat them as documentation, not a wall.</li>
+<li><strong>Only single inheritance, no static members</strong> — one
+<code>extends</code> parent per class, no interfaces/traits/mixins, no
+class-level (as opposed to per-instance) fields or methods.</li>
+<li><strong>The type checker’s argument/return checking is deliberately
+conservative, not exhaustive</strong> — it only flags a
+<em>confident</em> mismatch between two known concrete types
+(e.g. passing a <code>string</code> where a function declares
+<code>num</code>). It never flags anything involving an unknown-typed
+value (the result of a builtin call, <code>this</code>, a class field it
+can’t trace), and it doesn’t verify that every code path through a
+function actually returns a value, or that every field access on
+<code>this</code>/<code>super</code> is spelled correctly — those still
+surface as ordinary catchable runtime errors, not compile-time ones. If
+a program passes <code>jag check</code>, that means no
+<em>confident</em> mismatch was found, not that the program is fully
+verified.</li>
+<li><strong>Calling an unknown <em>class</em></strong>
+(<code>new NoSuchClass()</code>) <strong>is a compile-time error;
+calling an unknown <em>method or field</em> on a real class is a runtime
+one</strong> — the type checker can resolve class names up front, but
+doesn’t reject a specific wrong method/field name (that would need
+exhaustively tracking every value’s exact class, which it deliberately
+doesn’t attempt - see above).</li>
+<li><strong><code>async fun</code> is not concurrent</strong> — it runs
+synchronously, like any other function. <code>await</code> mostly just
+unwraps a <code>Task</code>.</li>
+<li><strong><code>worker.pool</code> doesn’t speed up CPU-bound
+code</strong> — worker threads are real, but interpreter execution
+across them is serialized.</li>
+<li><strong>Only <code>http://</code>/<code>ws://</code>, no
+TLS</strong> — <code>https://</code>/<code>wss://</code> fail with a
+clear error.</li>
+<li><strong>HTTP responses always close the connection</strong> — no
+keep-alive.</li>
+<li><strong><code>live</code> is a reserved namespace</strong> —
+<code>live = "1";</code> (the live-mode directive) is recognized
+specially and won’t shadow
+<code>live.on</code>/<code>.in</code>/<code>.deg</code>; the same
+protection applies to <code>json</code>, <code>env</code>,
+<code>file</code>, <code>dir</code>, <code>Task</code>,
+<code>server</code>, <code>socket</code>, <code>worker</code>,
+<code>http</code>.</li>
+<li><strong>Native Windows isn’t supported — use WSL.</strong> The
+reactor needs <code>epoll</code> (Linux) or <code>kqueue</code> (macOS);
+Windows has neither. See <a href="https://github.com/YOUR_GITHUB_USERNAME/jaguar/blob/main/docs/WINDOWS.md">docs/WINDOWS.md</a> for
+why and how to use WSL instead, which runs the real, fully-tested Linux
+path unmodified.</li>
+<li><strong>The macOS build is untested</strong> — written against the
+documented <code>kqueue(2)</code> API and modeled directly on the
+working Linux backend, but there was no macOS machine available during
+development. Report issues if you hit any; see DESIGN_DECISIONS.md.</li>
+</ul>
+    </div>
+    <footer>
+      <p>Jaguar is a language project exploring what a compiler feels
+      like when it borrows its syntax from everywhere and reloads
+      instantly. Docs generated from <code>docs/LANGUAGE_GUIDE.md</code> —
+      see <a href="https://github.com/YOUR_GITHUB_USERNAME/jaguar/blob/main/DESIGN_DECISIONS.md">DESIGN_DECISIONS.md</a>
+      for exactly what's real, what's simplified, and why, before you
+      take anything on this page for granted.</p>
+    </footer>
+  </div>
+</div>
+<script>
+// Copy-to-clipboard for the install command, with a fallback for
+// contexts where navigator.clipboard is unavailable or blocked (e.g.
+// opening this file directly via file:// while previewing it locally,
+// before it's deployed somewhere that serves it over https).
+document.querySelectorAll('.copy-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var target = document.getElementById(btn.getAttribute('data-copy-target'));
+    if (!target) return;
+    var text = target.innerText;
+    function showCopied() {
+      btn.textContent = 'copied';
+      btn.classList.add('copied');
+      setTimeout(function () { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1600);
+    }
+    function fallbackCopy() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showCopied(); }
+      catch (e) { btn.textContent = 'select & copy'; }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  });
+});
+
+// Mobile sidebar toggle
+var sidebar = document.getElementById('sidebar');
+var navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', function () {
+  sidebar.classList.toggle('open');
+});
+sidebar.querySelectorAll('a').forEach(function (a) {
+  a.addEventListener('click', function () { sidebar.classList.remove('open'); });
+});
+
+// Highlight the active section in the sidebar while scrolling
+var sections = Array.from(document.querySelectorAll('.content-wrap h2[id]'));
+var navLinks = Array.from(document.querySelectorAll('.nav-link'));
+function updateActiveNav() {
+  var scrollPos = window.scrollY + 120;
+  var current = null;
+  for (var i = 0; i < sections.length; i++) {
+    if (sections[i].offsetTop <= scrollPos) current = sections[i];
+  }
+  navLinks.forEach(function (link) {
+    link.classList.toggle('active', current && link.getAttribute('href') === '#' + current.id);
+  });
+}
+document.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+</script>
+</body>
+</html>
