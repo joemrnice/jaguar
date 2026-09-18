@@ -1,0 +1,20 @@
+live = "1";
+import "http.jag";
+
+server.on(8091);
+
+server.route("GET", "/", fun(req: data, res: data) {
+    res.send("Welcome to Jaguar HTTP server");
+});
+
+server.route("GET", "/users/{id}", fun(req: data, res: data) {
+    var id: string = req.params["id"];
+    res.json({ "id": id, "name": "Joe" });
+});
+
+server.route("POST", "/users", fun(req: data, res: data) {
+    var body: data = json.parse(req.body);
+    res.status(201).json({ "status": "created", "name": body["name"] });
+});
+
+server.listen();

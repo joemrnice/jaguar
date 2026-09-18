@@ -1,0 +1,13 @@
+live = "1";
+socket.on(9092);
+
+socket.route("/chat", fun(ws: Socket) {
+    ws.on("message", fun(msg: string) {
+        ws.send("echo: {{msg}}");
+    });
+    ws.on("close", fun() {
+        live.on("client disconnected");
+    });
+});
+
+socket.listen();

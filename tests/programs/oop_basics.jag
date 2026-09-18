@@ -1,0 +1,21 @@
+class User {
+    var name: string;
+    var age: num;
+
+    fun constructor(name: string, age: num) {
+        this.name = name;
+        this.age = age;
+    }
+
+    fun greet(): string {
+        return "Hi, I'm {{this.name}}, age {{this.age}}";
+    }
+}
+
+var u: User = new User("Ada", 30);
+live.on(u.name);
+live.on(u.age);
+live.on(u.greet());
+u.age = 31;
+live.on(u.age);
+live.on(u);

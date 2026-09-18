@@ -1,0 +1,67 @@
+live = "1";
+
+fixed PI: scifi = 3.14E2;
+var age: num = 33;
+var score: decimal = 98.71;
+var name: string = "Joseph";
+
+if (age > 18) {
+    live.on("adult");
+} elif (age == 18) {
+    live.on("just turned adult");
+} else {
+    live.on("minor");
+}
+
+var status: string = (age >= 18) ? "adult" : "minor";
+live.on("status: {{status}}");
+
+var i: num = 0;
+loop (i < 5) {
+    live.on(i);
+    i += 1;
+}
+
+var scores: list<num> = [10, 20, 30];
+for(s in scores) {
+    live.on(s);
+}
+
+iterate(scores, item) {
+    live.on("item: {{item}}");
+}
+
+scores.append(40);
+scores.insert(5);
+scores.sort();
+live.on(scores);
+
+var config: data = { "host": "localhost", "port": "8080" };
+live.on(config["host"]);
+live.on(config.port);
+
+fun greetUser(name: string) {
+    live.on("hi, {{name}}");
+}
+greetUser("world");
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+live.on(add(2, 3));
+
+var mixed: MixedList = [1, "two", true];
+live.on(mixed);
+
+var n: num = 7;
+var inRange: bool = n <<< (1, 10);
+live.on(inRange);
+
+try {
+    var x: data = json.parse("{\"a\": 1, \"b\": [1,2,3]}");
+    live.on(x["b"]);
+} catch (err: string) {
+    live.on("failed: {{err}}");
+}
+
+live.on(json.stringify({ "k": "v", "n": 5 }));

@@ -1,0 +1,3 @@
+live.on("worker task file running");
+var x: num = 21 * 2;
+live.on(x);

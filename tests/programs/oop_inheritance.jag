@@ -1,0 +1,30 @@
+class Animal {
+    var name: string;
+
+    fun constructor(name: string) {
+        this.name = name;
+    }
+
+    fun speak(): string {
+        return "{{this.name}} makes a sound";
+    }
+}
+
+class Dog extends Animal {
+    var breed: string;
+
+    fun constructor(name: string, breed: string) {
+        super(name);
+        this.breed = breed;
+    }
+
+    fun speak(): string {
+        var base: string = super.speak();
+        return "{{base}} (a bark, specifically, from a {{this.breed}})";
+    }
+}
+
+var d: Dog = new Dog("Rex", "Labrador");
+live.on(d.name);
+live.on(d.breed);
+live.on(d.speak());

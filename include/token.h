@@ -1,0 +1,45 @@
+#ifndef JAG_TOKEN_H
+#define JAG_TOKEN_H
+
+typedef enum {
+    TOK_EOF, TOK_ERROR,
+
+    /* literals */
+    TOK_NUM_LIT, TOK_DECIMAL_LIT, TOK_SCIFI_LIT, TOK_STRING_LIT,
+    TOK_TRUE, TOK_FALSE, TOK_IDENT,
+
+    /* type keywords */
+    TOK_TYPE_STRING, TOK_TYPE_NUM, TOK_TYPE_DECIMAL, TOK_TYPE_BOOL,
+    TOK_TYPE_SCIFI, TOK_TYPE_DATA, TOK_TYPE_LIST, TOK_TYPE_MIXEDLIST,
+    TOK_TYPE_ENUM, TOK_TYPE_STRUCT, TOK_TYPE_VECTOR, TOK_TYPE_MATRIX,
+    TOK_TYPE_TASK, TOK_TYPE_WORKER, TOK_TYPE_SOCKET,
+
+    /* keywords */
+    TOK_VAR, TOK_FIXED, TOK_FUN, TOK_ASYNC, TOK_AWAIT, TOK_RETURN,
+    TOK_IF, TOK_ELIF, TOK_ELSE, TOK_LOOP, TOK_DO, TOK_WHILE, TOK_FOR,
+    TOK_IN, TOK_ITERATE, TOK_CLASS, TOK_PUBLIC, TOK_PRIVATE, TOK_IMPORT,
+    TOK_EXPORT, TOK_TRY, TOK_CATCH, TOK_LIVE, TOK_NEW, TOK_THIS, TOK_EXTENDS, TOK_SUPER,
+
+    /* punctuation / operators */
+    TOK_LPAREN, TOK_RPAREN, TOK_LBRACE, TOK_RBRACE, TOK_LBRACKET, TOK_RBRACKET,
+    TOK_SEMI, TOK_COLON, TOK_COMMA, TOK_DOT, TOK_QUESTION,
+    TOK_ASSIGN, TOK_PLUS, TOK_MINUS, TOK_STAR, TOK_SLASH, TOK_PERCENT, TOK_POW,
+    TOK_PLUS_EQ, TOK_MINUS_EQ, TOK_STAR_EQ, TOK_SLASH_EQ, TOK_PERCENT_EQ, TOK_POW_EQ,
+    TOK_GT, TOK_LT, TOK_GE, TOK_LE, TOK_EQ, TOK_NE,
+    TOK_SHL, TOK_SHR, TOK_BETWEEN,
+    TOK_AND, TOK_OR, TOK_NOT,
+
+    TOK_COUNT
+} TokenType;
+
+typedef struct {
+    TokenType type;
+    const char *start;
+    int length;
+    int line;
+    /* for interpolated strings: raw text between quotes, parsed later */
+} Token;
+
+const char *token_type_name(TokenType t);
+
+#endif

@@ -1,0 +1,8 @@
+/* Run with: jag run worker_run.jag
+   (run from inside the examples/ directory, so the relative path below
+   resolves - worker.run() doesn't do its own path resolution beyond
+   what fopen() gives it). */
+worker.run("worker_run_task.jag", fun(result: data) {
+    live.on("worker.run callback fired");
+});
+live.on("main script continues");

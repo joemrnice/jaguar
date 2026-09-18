@@ -1,0 +1,57 @@
+/* Classes, constructors, this, inheritance, super, and polymorphism.
+   Run with:
+     jag run oop.jag
+*/
+
+class Animal {
+    var name: string;
+
+    fun constructor(name: string) {
+        this.name = name;
+    }
+
+    fun speak(): string {
+        return "{{this.name}} makes a sound";
+    }
+}
+
+class Dog extends Animal {
+    var breed: string;
+
+    fun constructor(name: string, breed: string) {
+        super(name);          // calls Animal's constructor
+        this.breed = breed;
+    }
+
+    fun speak(): string {
+        var base: string = super.speak();   // calls Animal's speak()
+        return "{{base}} (specifically, a bark, from a {{this.breed}})";
+    }
+}
+
+var d: Dog = new Dog("Rex", "Labrador");
+live.on(d.name);
+live.on(d.breed);
+live.on(d.speak());
+
+// Polymorphism: this.area() dispatches to whichever class actually
+// built the instance, even when called from the shared base method.
+class Shape {
+    fun area(): decimal { return 0.0; }
+    fun describe(): string { return "a shape with area {{this.area()}}"; }
+}
+class Circle extends Shape {
+    var radius: decimal;
+    fun constructor(radius: decimal) { this.radius = radius; }
+    fun area(): decimal { return 3.14159 * this.radius * this.radius; }
+}
+class Square extends Shape {
+    var side: decimal;
+    fun constructor(side: decimal) { this.side = side; }
+    fun area(): decimal { return this.side * this.side; }
+}
+
+var shapes: MixedList = [new Circle(2.0), new Square(3.0)];
+iterate(shapes, s) {
+    live.on(s.describe());
+}

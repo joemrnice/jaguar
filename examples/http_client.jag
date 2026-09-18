@@ -1,0 +1,17 @@
+/* An async HTTP client: await, and Task.all() for concurrent fan-out.
+   Start http_server.jag in one terminal first, then in another:
+     jag run http_client.jag
+*/
+async fun fetchUser(id: num): Task<data> {
+    var res: data = await http.get("http://127.0.0.1:8091/users/{{id}}");
+    return json.parse(res["body"]);
+}
+
+async fun main() {
+    var user: data = await fetchUser(42);
+    live.on(user);
+
+    var results: list<data> = await Task.all([fetchUser(1), fetchUser(2), fetchUser(3)]);
+    live.on(results);
+}
+main();

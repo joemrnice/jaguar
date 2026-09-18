@@ -1,0 +1,18 @@
+/* live.after (one-shot) and live.every (repeating) timers, both driven
+   by the real event-loop reactor (not run synchronously). Run with:
+     jag run timers.jag
+*/
+live.on("start");
+
+live.after(200, fun() {
+    live.on("1 second passed (simulated at 200ms for test speed)");
+});
+
+var count: num = 0;
+var tickId: num = live.every(100, fun() {
+    count += 1;
+    live.on("tick {{count}}");
+    if (count >= 3) {
+        live.clear(tickId);
+    }
+});

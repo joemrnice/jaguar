@@ -1,0 +1,20 @@
+/* A WebSocket echo server (RFC 6455): handshake, text frames, close
+   detection. Run with:
+     jag run websocket_chat.jag
+   then connect with any WebSocket client to ws://127.0.0.1:9092/chat
+   (e.g. `wscat -c ws://127.0.0.1:9092/chat`, or see tests/ws_check.py
+   for a plain-Python client using only the standard library).
+*/
+live = "1";
+socket.on(9092);
+
+socket.route("/chat", fun(ws: Socket) {
+    ws.on("message", fun(msg: string) {
+        ws.send("echo: {{msg}}");
+    });
+    ws.on("close", fun() {
+        live.on("client disconnected");
+    });
+});
+
+socket.listen();

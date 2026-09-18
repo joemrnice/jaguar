@@ -1,0 +1,20 @@
+fun heavyComputation(): num {
+    var total: num = 0;
+    var i: num = 0;
+    loop (i < 200000) {
+        total += i;
+        i += 1;
+    }
+    return total;
+}
+
+var pool: Worker = worker.pool(4);
+pool.submit(fun(): num { return heavyComputation(); });
+pool.submit(fun(): num { return heavyComputation(); });
+pool.submit(fun(): num { return heavyComputation(); });
+pool.submit(fun(): num { return heavyComputation(); });
+
+pool.onAll(fun(results: list<num>) {
+    live.on("worker pool results:");
+    live.on(results);
+});

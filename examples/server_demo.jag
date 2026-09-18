@@ -1,0 +1,57 @@
+/* Combined demo, close to the language spec's own worked example:
+   an HTTP server, a WebSocket chat endpoint, a worker pool doing CPU
+   work per request, and a heartbeat timer - all sharing the one
+   process/event loop. Run with: jag run server_demo.jag
+   (or jag -live=1 server_demo.jag to also watch for saves - see
+   DESIGN_DECISIONS.md for the live-reload + servers caveat). */
+
+live = "1";
+import "http.jag";
+
+fixed PORT: num = env.get("PORT", 8080);
+
+server.on(PORT);
+
+server.route("GET", "/", fun(req: data, res: data) {
+    res.send("Welcome to Jaguar HTTP server");
+});
+
+server.route("GET", "/users/{id}", fun(req: data, res: data) {
+    var id: string = req.params["id"];
+    res.json({ "id": id, "name": "Joe" });
+});
+
+var pool: Worker = worker.pool(4);
+server.route("POST", "/compute", fun(req: data, res: data) {
+    pool.submit(fun(): num { return heavyComputation(); });
+    pool.onAll(fun(results: list<num>) {
+        res.json({ "results": results });
+    });
+});
+
+fun heavyComputation(): num {
+    var total: num = 0;
+    var i: num = 0;
+    loop (i < 2000000) {
+        total += i;
+        i += 1;
+    }
+    return total;
+}
+
+socket.on(9090);
+socket.route("/chat", fun(ws: Socket) {
+    ws.on("message", fun(msg: string) {
+        ws.send("echo: {{msg}}");
+    });
+    ws.on("close", fun() {
+        live.on("client disconnected");
+    });
+});
+
+live.every(10000, fun() {
+    live.on("heartbeat");
+});
+
+server.listen();
+socket.listen();
