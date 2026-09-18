@@ -42,12 +42,19 @@ dependencies on any platform.
 machine — see [docs/PUBLISHING.md](docs/PUBLISHING.md) for how this is
 hosted, and read `get-jaguar.sh` before piping any install script into a
 shell, the way you should for anyone's): 
-Also make sure you have admin permission activate via password or use : 
 
 ```sh
-sudo curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
-else you will see Permission de
+Run this instead (no sudo needed at all, which is actually the safer pattern for piping a script into a shell):
+```
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | PREFIX=$HOME/.local bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+```
+Or if you specifically want it in /usr/local, put sudo on bash instead of curl:
+```
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | sudo bash
+```
 [docs/PUBLISHING.md](docs/PUBLISHING.md) if you're setting this project
 up on GitHub yourself.) Options via environment variables:
 
