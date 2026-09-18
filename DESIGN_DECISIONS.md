@@ -7,7 +7,7 @@ before assuming any behavior, especially around networking, typing, or
 platform support — it's the single most important thing to know about
 this codebase.
 
-## Version 2 at a glance
+## Version 1.0.1 at a glance
 
 Three substantial additions over the version documented below the fold:
 
