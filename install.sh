@@ -10,9 +10,11 @@ cd "$(dirname "$0")"
 
 case "$(uname -s)" in
     Linux)
+        chmod +x ./installers/install-linux.sh 2>/dev/null || true
         exec ./installers/install-linux.sh "$@"
         ;;
     Darwin)
+        chmod +x ./installers/install-macos.sh 2>/dev/null || true
         exec ./installers/install-macos.sh "$@"
         ;;
     *)
