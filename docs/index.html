@@ -402,7 +402,12 @@ footer {
           <span>INSTALL — linux &amp; macos</span>
           <button class="copy-btn" data-copy-target="install-cmd">copy</button>
         </div>
-        <pre id="install-cmd"><code>curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash</code></pre>
+        <pre id="install-cmd">
+          <code>
+          curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | PREFIX=$HOME/.local bash
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+         </code>
+        </pre>
       </div>
       <div class="hero-links">
         <a href="https://github.com/joemrnice/jaguar">source on GitHub →</a>
