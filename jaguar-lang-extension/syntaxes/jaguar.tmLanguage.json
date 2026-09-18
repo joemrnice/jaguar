@@ -1,0 +1,166 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jaguar",
+  "scopeName": "source.jaguar",
+  "fileTypes": [
+    "jag",
+    "ja"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.jaguar",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.jaguar",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.jaguar"
+            }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.jaguar",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.jaguar",
+              "match": "\\\\."
+            },
+            {
+              "name": "meta.template.expression.jaguar",
+              "begin": "(\\{\\{|\\$\\{)",
+              "end": "\\}",
+              "patterns": [
+                {
+                  "include": "#expressions"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.jaguar",
+          "match": "\\b(if|elif|else|loop|while|do|for|in|return|break|continue|try|catch|extends|new|this|super|constructor|await)\\b"
+        },
+        {
+          "name": "keyword.declaration.jaguar",
+          "match": "\\b(var|fixed|fun|class|struct|enum|vector|matrix|async|public|private)\\b"
+        },
+        {
+          "name": "keyword.storage.type.jaguar",
+          "match": "\\b(string|num|decimal|bool|scifi|data|list|MixedList|void|Task|Worker|Socket)\\b"
+        },
+        {
+          "name": "keyword.other.jaguar",
+          "match": "\\b(live|file|dir|env|json|http|socket|worker|server|live\\.on|live\\.deg|live\\.after|live\\.every|file\\.on|file\\.read|file\\.close|dir\\.on|dir\\.read|dir\\.close|dir\\.del|env\\.get|json\\.parse|json\\.stringify|http\\.get|http\\.post|socket\\.on|socket\\.route|socket\\.listen|worker\\.spawn|worker\\.run|worker\\.pool|server\\.on|server\\.route|server\\.listen)\\b"
+        },
+        {
+          "name": "constant.language.jaguar",
+          "match": "\\b(true|false|null|undefined|void)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.arithmetic.jaguar",
+          "match": "(\\+|-|\\*|/|%|\\*\\*|<<|>>|<<<)"
+        },
+        {
+          "name": "keyword.operator.comparison.jaguar",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.logical.jaguar",
+          "match": "(&&|\\|\\||!)"
+        },
+        {
+          "name": "keyword.operator.assignment.jaguar",
+          "match": "(=|\\+=|-=|\\*=|/=|%=|\\*\\*=)"
+        },
+        {
+          "name": "keyword.operator.ternary.jaguar",
+          "match": "\\?"
+        },
+        {
+          "name": "keyword.operator.range.jaguar",
+          "match": "<<<"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.scifi.jaguar",
+          "match": "\\b\\d+\\.\\d+[Ee][+-]?\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.jaguar",
+          "match": "\\b\\d+\\.\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.jaguar",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.jaguar",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    },
+    "expressions": {
+      "patterns": [
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#identifiers"
+        },
+        {
+          "include": "#operators"
+        }
+      ]
+    }
+  }
+}

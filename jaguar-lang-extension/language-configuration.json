@@ -1,0 +1,43 @@
+{
+  "comments": [
+    "// This file defines the language configuration for Jaguar",
+    "// It controls how VSCode handles comments, brackets, and auto-closing"
+  ],
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "[", "close": "]" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] },
+    { "open": "//", "close": "\n", "notIn": ["string"] },
+    { "open": "/*", "close": "*/", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""]
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*//\\s*#?region\\b",
+      "end": "^\\s*//\\s*#?endregion\\b"
+    }
+  },
+  "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*(?:fun|class|if|elif|else|loop|while|for|try|catch)\\b.*",
+      "action": {
+        "indent": "indent"
+      }
+    }
+  ],
+  "autoIndent": "advanced",
+  "lineComment": "//",
+  "blockComment": ["/*", "*/"]
+}

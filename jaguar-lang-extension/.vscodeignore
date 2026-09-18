@@ -1,0 +1,20 @@
+# Development files
+.vscode/**
+src/**
+.gitignore
+.eslintrc.json
+tsconfig.json
+generate_png.sh
+
+# Build artifacts (already compiled)
+node_modules/**
+out/**/*.d.ts
+out/**/*.d.ts.map
+
+# Documentation not needed in package
+CONTRIBUTING.md
+
+# Test files
+test/**
+**/*.test.ts
+**/*.spec.ts
