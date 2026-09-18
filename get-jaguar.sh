@@ -2,7 +2,7 @@
 # Jaguar remote installer - downloads the source from GitHub, builds it,
 # and installs the `jag` binary. Meant to be run as a one-liner:
 #
-#   curl -fsSL https://raw.githubusercontent.com/<ORG>/<REPO>/main/get-jaguar.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/joemrnice/main/get-jaguar.sh | bash
 #
 # Safe to re-run (rebuilds and reinstalls). Override where it installs to
 # and what it fetches with environment variables:
@@ -15,7 +15,7 @@
 # shell, the way you should for any install-by-curl script.
 set -euo pipefail
 
-JAGUAR_REPO="${JAGUAR_REPO:-YOUR_GITHUB_USERNAME/jaguar}"
+JAGUAR_REPO="${JAGUAR_REPO:-joemrnice/jaguar}"
 JAGUAR_REF="${JAGUAR_REF:-main}"
 PREFIX="${PREFIX:-/usr/local}"
 
