@@ -26,8 +26,18 @@ echo "Building jag (Linux, epoll backend)..."
 make clean >/dev/null 2>&1 || true
 make
 
-mkdir -p "$BIN_DIR"
-cp ./jag "$BIN_DIR/jag"
+mkdir -p "$BIN_DIR" 2>/dev/null
+if ! cp ./jag "$BIN_DIR/jag" 2>/tmp/jag_install_err; then
+    cat /tmp/jag_install_err >&2
+    echo "" >&2
+    echo "Could not write to $BIN_DIR. If you piped this through curl with" >&2
+    echo "sudo (\`sudo curl ... | bash\`), that only elevates curl, not the" >&2
+    echo "install itself - use one of these instead:" >&2
+    echo "" >&2
+    echo "  PREFIX=\$HOME/.local ./installers/install-linux.sh   # no sudo needed" >&2
+    echo "  sudo ./installers/install-linux.sh                    # sudo the install directly" >&2
+    exit 1
+fi
 chmod +x "$BIN_DIR/jag"
 
 echo "Installed jag to $BIN_DIR/jag"

@@ -2,20 +2,30 @@
 # Jaguar remote installer - downloads the source from GitHub, builds it,
 # and installs the `jag` binary. Meant to be run as a one-liner:
 #
-#   curl -fsSL https://raw.githubusercontent.com/joemrnice/main/get-jaguar.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/<ORG>/<REPO>/main/get-jaguar.sh | bash
 #
 # Safe to re-run (rebuilds and reinstalls). Override where it installs to
 # and what it fetches with environment variables:
 #
-#   PREFIX=$HOME/.local curl -fsSL .../get-jaguar.sh | bash   # no sudo needed
-#   JAGUAR_REF=v0.2.0    curl -fsSL .../get-jaguar.sh | bash   # pin a release tag
+#   curl -fsSL .../get-jaguar.sh | PREFIX=$HOME/.local bash   # no sudo needed
+#   curl -fsSL .../get-jaguar.sh | JAGUAR_REF=v0.2.0 bash     # pin a release tag
+#
+# IMPORTANT: in a pipe, an env-var prefix only applies to the command it's
+# directly attached to. `PREFIX=x curl ... | bash` sets PREFIX for curl
+# (which ignores it) and NOT for bash (which is what actually reads it) -
+# put the variable on whichever side of the pipe actually runs this
+# script, as shown above. The same applies to `sudo`: `sudo curl ... |
+# bash` only elevates curl, not the install - if you want to install to
+# a root-owned location like the default /usr/local, write
+# `curl ... | sudo bash` instead (sudo on bash, not curl) - though the
+# PREFIX=$HOME/.local form above avoiding sudo entirely is recommended.
 #
 # This script only ever builds from source on your machine - it does not
 # download or execute a prebuilt binary. Read it before piping it into a
 # shell, the way you should for any install-by-curl script.
 set -euo pipefail
 
-JAGUAR_REPO="${JAGUAR_REPO:-joemrnice/jaguar}"
+JAGUAR_REPO="${JAGUAR_REPO:-YOUR_GITHUB_USERNAME/jaguar}"
 JAGUAR_REF="${JAGUAR_REF:-main}"
 PREFIX="${PREFIX:-/usr/local}"
 
@@ -71,7 +81,18 @@ cd "$WORKDIR/src"
 
 info "Building and installing (PREFIX=$PREFIX)..."
 chmod +x "$INSTALLER"
-PREFIX="$PREFIX" "./$INSTALLER"
+if ! PREFIX="$PREFIX" "./$INSTALLER"; then
+    echo "" >&2
+    echo "Install failed - if the error above says something like" >&2
+    echo "\"Permission denied\" writing to $PREFIX/bin, that's almost always" >&2
+    echo "because \`sudo\` (if you used it) only applies to the FIRST command" >&2
+    echo "in a pipe - \`sudo curl ... | bash\` elevates curl, not bash, so the" >&2
+    echo "actual install still runs as your normal user. Fix with either:" >&2
+    echo "" >&2
+    echo "  curl -fsSL <url> | PREFIX=\$HOME/.local bash   # no sudo needed (recommended)" >&2
+    echo "  curl -fsSL <url> | sudo bash                     # sudo on bash, not curl" >&2
+    exit 1
+fi
 
 info "Done. Verifying..."
 if command -v jag >/dev/null 2>&1; then

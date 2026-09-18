@@ -33,8 +33,18 @@ echo "Building jag (macOS, kqueue backend - see the note at the top of this scri
 make clean >/dev/null 2>&1 || true
 make
 
-mkdir -p "$BIN_DIR"
-cp ./jag "$BIN_DIR/jag"
+mkdir -p "$BIN_DIR" 2>/dev/null
+if ! cp ./jag "$BIN_DIR/jag" 2>/tmp/jag_install_err; then
+    cat /tmp/jag_install_err >&2
+    echo "" >&2
+    echo "Could not write to $BIN_DIR. If you piped this through curl with" >&2
+    echo "sudo (\`sudo curl ... | bash\`), that only elevates curl, not the" >&2
+    echo "install itself - use one of these instead:" >&2
+    echo "" >&2
+    echo "  PREFIX=\$HOME/.local ./installers/install-macos.sh   # no sudo needed" >&2
+    echo "  sudo ./installers/install-macos.sh                    # sudo the install directly" >&2
+    exit 1
+fi
 chmod +x "$BIN_DIR/jag"
 
 echo "Installed jag to $BIN_DIR/jag"
@@ -44,8 +54,3 @@ case ":$PATH:" in
        echo "  echo 'export PATH=\"$BIN_DIR:\$PATH\"' >> ~/.zshrc && source ~/.zshrc"
        echo "  (or ~/.bash_profile if you're using bash)" ;;
 esac
-
-if [ "$PREFIX" = "/usr/local" ] && [ ! -w "/usr/local/bin" ] 2>/dev/null; then
-    echo "Note: if that cp failed with a permissions error, either run with sudo," \
-         "or reinstall with PREFIX=\$HOME/.local ./installers/install-macos.sh"
-fi
