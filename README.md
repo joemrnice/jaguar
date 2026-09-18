@@ -38,6 +38,26 @@ dependencies on any platform.
 
 ## Install
 
+**One-liner, straight from GitHub** (builds from source on your own
+machine — see [docs/PUBLISHING.md](docs/PUBLISHING.md) for how this is
+hosted, and read `get-jaguar.sh` before piping any install script into a
+shell, the way you should for anyone's):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/jaguar/main/get-jaguar.sh | bash
+```
+
+(Replace `YOUR_GITHUB_USERNAME` — see
+[docs/PUBLISHING.md](docs/PUBLISHING.md) if you're setting this project
+up on GitHub yourself.) Options via environment variables:
+
+```sh
+PREFIX=$HOME/.local curl -fsSL .../get-jaguar.sh | bash   # no sudo needed
+JAGUAR_REF=v0.2.0   curl -fsSL .../get-jaguar.sh | bash   # pin a release tag instead of main
+```
+
+**From a local clone:**
+
 ```sh
 ./install.sh                        # detects your OS and installs to /usr/local/bin
 PREFIX=$HOME/.local ./install.sh    # or a custom prefix, no sudo needed
@@ -158,7 +178,8 @@ src/runtime/      networking/concurrency runtime:
                     sha1.c, base64.c - vendored, for the WS handshake only
 src/main.c        CLI entry point
 installers/       platform-specific installers (install-linux.sh, install-macos.sh)
-docs/             LANGUAGE_GUIDE.md, WINDOWS.md
+docs/             LANGUAGE_GUIDE.md, WINDOWS.md, PUBLISHING.md, index.html (static docs site)
+get-jaguar.sh     one-line remote installer (curl | bash from GitHub - see docs/PUBLISHING.md)
 examples/         runnable networking/concurrency examples + guided README
 tests/            end-to-end test suite (tests/run_tests.sh) + sample .jag programs
 ```
