@@ -32,7 +32,7 @@ case "$OS" in
         ;;
 esac
 
-if [ "$JAGUAR_REPO" = "joemrnice/jaguar" ]; then
+if [ "$JAGUAR_REPO" = "Your_Name_Here/jaguar" ]; then
     fail "get-jaguar.sh still has its placeholder repo path. If you're the maintainer, edit JAGUAR_REPO at the top of this file before publishing it; if you're a user seeing this, the maintainer hasn't finished hosting setup yet - see docs/PUBLISHING.md."
 fi
 
