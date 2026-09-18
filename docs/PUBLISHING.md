@@ -22,7 +22,7 @@ initialize with a README, since you already have one → create.
 Then push:
 
 ```sh
-git remote add origin https://github.com/YOUR_USERNAME/jaguar.git
+git remote add origin https://github.com/joemrnice/jaguar.git
 git branch -M main
 git push -u origin main
 ```
@@ -32,22 +32,22 @@ git push -u origin main
 `get-jaguar.sh` at the repo root has one line to edit:
 
 ```sh
-JAGUAR_REPO="${JAGUAR_REPO:-YOUR_GITHUB_USERNAME/jaguar}"
+JAGUAR_REPO="${JAGUAR_REPO:-joemrnice/jaguar}"
 ```
 
-Change `YOUR_GITHUB_USERNAME/jaguar` to your actual `owner/repo` (e.g.
+Change `joemrnice/jaguar` to your actual `owner/repo` (e.g.
 `ada/jaguar`), commit, and push. That's the entire setup — GitHub serves
 every file in a public repo at a stable `raw.githubusercontent.com` URL
 automatically, no configuration needed:
 
 ```
-https://raw.githubusercontent.com/YOUR_USERNAME/jaguar/main/get-jaguar.sh
+https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh
 ```
 
 The install command developers run is that URL piped into `bash`:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/jaguar/main/get-jaguar.sh | bash
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
 
 Update the same placeholder in `README.md` and `docs/index.html` to
@@ -59,7 +59,7 @@ real `owner/repo` after pushing covers all three).
 machine/directory than your working copy:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/jaguar/main/get-jaguar.sh | bash
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
 
 If that raw URL 404s, double check the repo is public and the path
@@ -74,7 +74,7 @@ Once you cut a release (next section), anyone can install that exact
 version instead of whatever's currently on `main`:
 
 ```sh
-JAGUAR_REF=v0.2.0 curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/jaguar/main/get-jaguar.sh | bash
+JAGUAR_REF=v0.2.0 curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
 
 `get-jaguar.sh` clones/downloads `JAGUAR_REF` (a branch **or** a tag —
@@ -116,7 +116,7 @@ can serve it with no build step:
 GitHub publishes it (usually within a minute or two) at:
 
 ```
-https://YOUR_USERNAME.github.io/jaguar/
+https://joemrnice.github.io/jaguar/
 ```
 
 (That's `/docs/index.html` in the repo becoming the site's root `index.html`
@@ -137,5 +137,5 @@ requires changing anything in this project.
 | `README.md` | the `curl \| bash` example in the Install section |
 | `docs/index.html` | the install command shown in the hero section |
 
-All three currently say `YOUR_GITHUB_USERNAME/jaguar` in the matching
+All three currently say `joemrnice/jaguar` in the matching
 spot, so it's one find-and-replace across the project.
