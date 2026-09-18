@@ -44,10 +44,9 @@ hosted, and read `get-jaguar.sh` before piping any install script into a
 shell, the way you should for anyone's):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/jaguar/main/get-jaguar.sh | bash
+curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
 
-(Replace `YOUR_GITHUB_USERNAME` — see
 [docs/PUBLISHING.md](docs/PUBLISHING.md) if you're setting this project
 up on GitHub yourself.) Options via environment variables:
 
