@@ -1,0 +1,62 @@
+```
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.js
+*.tsbuildinfo
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment variables
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+coverage/
+htmlcov/
+*.coverage
+
+# Python related (if any Python files exist in project)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Testing
+.nyc_output/
+coverage/
+.junit/
+
+# Local configuration
+.vscode/settings.json
+
+# Package lock files
+package-lock.json
+
+# TypeScript
+*.tsbuildinfo
+```

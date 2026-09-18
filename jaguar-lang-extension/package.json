@@ -1,0 +1,238 @@
+{
+  "name": "jaguar-lang",
+  "displayName": "Jaguar Language Support",
+  "description": "Official language support for Jaguar (jag) - linting, formatting, syntax highlighting, and live reload",
+  "version": "1.0.0",
+  "publisher": "jaguar-lang-team",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "jaguar",
+    "jag",
+    "programming language",
+    "syntax highlighting",
+    "formatter",
+    "linter"
+  ],
+  "icon": "icons/jag.png",
+  "galleryBanner": {
+    "color": "#FF6B35",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onLanguage:jaguar",
+    "workspaceContains:*.jag",
+    "workspaceContains:*.ja"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "jaguar",
+        "aliases": [
+          "Jaguar",
+          "jaguar"
+        ],
+        "extensions": [
+          ".jag",
+          ".ja"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/jag.png",
+          "dark": "./icons/jag.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jaguar",
+        "scopeName": "source.jaguar",
+        "path": "./syntaxes/jaguar.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "jaguar.run",
+        "title": "Run Jaguar File",
+        "category": "Jaguar",
+        "icon": "$(play)"
+      },
+      {
+        "command": "jaguar.check",
+        "title": "Check Jaguar File (Lint)",
+        "category": "Jaguar",
+        "icon": "$(check)"
+      },
+      {
+        "command": "jaguar.format",
+        "title": "Format Jaguar Document",
+        "category": "Jaguar",
+        "icon": "$(format)"
+      },
+      {
+        "command": "jaguar.liveReload",
+        "title": "Toggle Live Reload",
+        "category": "Jaguar",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "jaguar.build",
+        "title": "Build Jaguar Project",
+        "category": "Jaguar",
+        "icon": "$(tools)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == jaguar",
+          "command": "jaguar.run",
+          "group": "navigation@1"
+        },
+        {
+          "when": "resourceLangId == jaguar",
+          "command": "jaguar.check",
+          "group": "navigation@2"
+        },
+        {
+          "when": "resourceLangId == jaguar",
+          "command": "jaguar.liveReload",
+          "group": "navigation@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceExtname == .jag || resourceExtname == .ja",
+          "command": "jaguar.run",
+          "group": "jaguar@1"
+        },
+        {
+          "when": "resourceExtname == .jag || resourceExtname == .ja",
+          "command": "jaguar.check",
+          "group": "jaguar@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "jaguar.run",
+        "key": "Ctrl+Shift+F5",
+        "mac": "Cmd+Shift+F5",
+        "when": "editorLangId == jaguar"
+      },
+      {
+        "command": "jaguar.check",
+        "key": "Ctrl+Shift+L",
+        "mac": "Cmd+Shift+L",
+        "when": "editorLangId == jaguar"
+      },
+      {
+        "command": "jaguar.format",
+        "key": "Ctrl+Shift+I",
+        "mac": "Cmd+Shift+I",
+        "when": "editorLangId == jaguar"
+      },
+      {
+        "command": "jaguar.liveReload",
+        "key": "Ctrl+Shift+R",
+        "mac": "Cmd+Shift+R",
+        "when": "editorLangId == jaguar"
+      }
+    ],
+    "configuration": {
+      "title": "Jaguar Language",
+      "properties": {
+        "jaguar.executablePath": {
+          "type": "string",
+          "default": "jag",
+          "description": "Path to the jag executable. Leave as 'jag' if it's in your PATH."
+        },
+        "jaguar.enableLiveReload": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable live reload on file save"
+        },
+        "jaguar.lintOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run linter when saving a file"
+        },
+        "jaguar.formatOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Format document on save"
+        },
+        "jaguar.showOutputOnRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show output terminal when running Jaguar code"
+        }
+      }
+    },
+    "problemMatchers": [
+      {
+        "name": "jaguar-error",
+        "owner": "jaguar",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^([^:]+):(\\d+):\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "jaguar",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "The jag command to execute (run, check, build)"
+          },
+          "file": {
+            "type": "string",
+            "description": "The file to run (optional, defaults to current file)"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0",
+    "@vscode/test-electron": "^2.3.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaguar-lang/jaguar-vscode-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/jaguar-lang/jaguar-vscode-extension/issues"
+  },
+  "license": "MIT"
+}
