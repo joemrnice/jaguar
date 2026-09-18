@@ -20,6 +20,7 @@ else
     EXCLUDE_BACKEND := src/runtime/reactor_kqueue.c
 endif
 
+CFLAGS += -Iinclude
 SRC := $(filter-out $(EXCLUDE_BACKEND), $(shell find src -name '*.c'))
 OBJ := $(SRC:.c=.o)
 

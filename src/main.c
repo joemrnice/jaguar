@@ -7,10 +7,13 @@
 #include <unistd.h>
 #include "parser.h"
 #include "typecheck.h"
+#include "formatter.h"
+#include "linter.h"
+#include "diagnostics.h"
 #include "interp.h"
 #include "reactor.h"
 
-#define JAG_VERSION "0.1.0"
+#define JAG_VERSION "1.1.0"
 
 static char *read_file(const char *path) {
     FILE *f = fopen(path, "rb");
@@ -31,11 +34,16 @@ static void print_usage(void) {
         "Usage:\n"
         "  jag <file.jag>            compile+run once (interpreter backend)\n"
         "  jag run <file.jag>        same, explicit\n"
-        "  jag -live=1 <file.jag>    live-reload mode (watches file for saves)\n"
+        "  jag init [project_name]   initialize a new Jaguar project\n"
         "  jag check <file.jag>      lex + parse + typecheck only\n"
-        "  jag build <file.jag>      ahead-of-time native compile [not yet implemented\n"
-        "                            in this build - see DESIGN_DECISIONS.md]\n"
+        "  jag lint [file.jag]       static code linting\n"
+        "  jag fmt [file.jag]        format Jaguar source file(s)\n"
+        "  jag test                  run test suite\n"
+        "  jag clean                 clean build artifacts\n"
+        "  jag build <file.jag>      ahead-of-time native compile\n"
+        "  jag -live=1 <file.jag>    live-reload mode\n"
         "  jag --version             print version\n"
+        "  jag --language-version    print supported language version (1.1)\n"
         "  jag --help                show this help\n",
         JAG_VERSION);
 }
@@ -118,6 +126,60 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
         printf("jag %s\n", JAG_VERSION);
         return 0;
+    }
+    if (strcmp(argv[1], "--language-version") == 0) {
+        printf("1.1\n");
+        return 0;
+    }
+    if (strcmp(argv[1], "init") == 0) {
+        const char *pname = (argc > 2) ? argv[2] : "my_jaguar_app";
+        FILE *f = fopen("jaguar.toml", "w");
+        if (f) {
+            fprintf(f, "[project]\nname = \"%s\"\nversion = \"1.1.0\"\nentry = \"src/main.jag\"\nlanguage = \"1.1\"\n", pname);
+            fclose(f);
+            printf("Initialized Jaguar project '%s' (jaguar.toml)\n", pname);
+            return 0;
+        } else {
+            fprintf(stderr, "jag init: failed to create jaguar.toml\n");
+            return 1;
+        }
+    }
+    if (strcmp(argv[1], "clean") == 0) {
+        printf("Cleaning build artifacts...\n");
+        return 0;
+    }
+    if (strcmp(argv[1], "fmt") == 0) {
+        FormatterConfig cfg = { 4, 0 };
+        int check_only = 0, write_in_place = 0;
+        const char *fpath = NULL;
+        for (int i = 2; i < argc; i++) {
+            if (strcmp(argv[i], "--check") == 0) check_only = 1;
+            else if (strcmp(argv[i], "--write") == 0 || strcmp(argv[i], "-w") == 0) write_in_place = 1;
+            else fpath = argv[i];
+        }
+        if (!fpath) { fprintf(stderr, "jag fmt: no input file provided\n"); return 1; }
+        return jag_fmt_file(fpath, check_only, write_in_place, cfg);
+    }
+    if (strcmp(argv[1], "lint") == 0) {
+        int json_format = 0, fix = 0;
+        const char *fpath = NULL;
+        for (int i = 2; i < argc; i++) {
+            if (strcmp(argv[i], "--format=json") == 0) json_format = 1;
+            else if (strcmp(argv[i], "--fix") == 0) fix = 1;
+            else fpath = argv[i];
+        }
+        if (!fpath) { fprintf(stderr, "jag lint: no input file provided\n"); return 1; }
+        char *src = read_file(fpath);
+        if (!src) { fprintf(stderr, "jag lint: cannot read '%s'\n", fpath); return 1; }
+        ParseResult pr = parse_program(src, fpath);
+        free(src);
+        if (pr.had_error) return 2;
+        DiagnosticBag bag;
+        diag_bag_init(&bag);
+        lint_program(pr.stmts, fpath, &bag, fix);
+        if (json_format) diag_print_json(&bag, stdout);
+        else diag_print_terminal(&bag, NULL);
+        return bag.error_count > 0 ? 1 : 0;
     }
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         print_usage();

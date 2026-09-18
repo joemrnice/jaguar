@@ -2,7 +2,7 @@
   "name": "jaguar-lang",
   "displayName": "Jaguar Language Support",
   "description": "Official language support for Jaguar (jag) - linting, formatting, syntax highlighting, and live reload",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "jaguar-lang-team",
   "engines": {
     "vscode": "^1.85.0"
