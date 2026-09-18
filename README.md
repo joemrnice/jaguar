@@ -41,12 +41,13 @@ dependencies on any platform.
 **One-liner, straight from GitHub** (builds from source on your own
 machine — see [docs/PUBLISHING.md](docs/PUBLISHING.md) for how this is
 hosted, and read `get-jaguar.sh` before piping any install script into a
-shell, the way you should for anyone's):
+shell, the way you should for anyone's): 
+Also make sure you have admin permission activate via password or use : 
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
+sudo curl -fsSL https://raw.githubusercontent.com/joemrnice/jaguar/main/get-jaguar.sh | bash
 ```
-
+else you will see Permission de
 [docs/PUBLISHING.md](docs/PUBLISHING.md) if you're setting this project
 up on GitHub yourself.) Options via environment variables:
 
